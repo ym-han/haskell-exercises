@@ -1,6 +1,6 @@
-module L4Exs where
-
 {-# LANGUAGE InstanceSigs #-}
+
+module L4Exs where
 
 import Control.Applicative 
 
@@ -47,7 +47,7 @@ instance Applicative MyZipList where
   gs <*> ys = 
     let glst = getMyZipList gs 
         ylst = getMyZipList ys
-    in MyZipList {getMyZipList = (zipApp glst ylst)}
+    in MyZipList (zipApp glst ylst)
 
 
 
