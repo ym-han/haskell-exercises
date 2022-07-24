@@ -102,7 +102,7 @@ instance Traversable Tree where
 
 {-
 Examples:
-g = \x -> Just (x + 1) if x > 0 else Nothing
+g = \x -> if x > 0 then Just (x + 1) else Nothing 
 traverse g (Node (Leaf 1) 2 (Leaf 0)) = Nothing
 traverse g (Node (Leaf 1) 2 (Leaf 3)) = Just (Node (Leaf 2) 3 (Leaf 4))
 
