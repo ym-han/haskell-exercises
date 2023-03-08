@@ -21,13 +21,13 @@ data Date = D Month Day
 [jan, feb, march, apr, dec] = map D [ Jan, Feb, March, Apr, Dec]
 
 ------ mapping them
+{-
 type CalT a = Map Time a
 type CalD a = Map Date a 
 type Cal a = CalD (CalT a)
 
 
 type CalL a = Cal (a,Time)
-{-
             = CalD (CalT (a, Time))
             = Map Date (CalT (a, Time))
             = Map Date (Map Time (a, Time))
@@ -37,21 +37,22 @@ This defines a calendar domain in which each appointment is a pair of some arbit
 This extension is modular in the sense that
 the change to the semantic domain is localized, allowing us to directly reuse any syntax or operations that are polymorphic in the appointment subdomain (that is, that have types like Cal a).
 -}
+-- type CalP a = Map (Private Date) (Private a)
+-- type CalPPte a = CalP (Private a) 
 
 data Privacy k a = Hidden k a | Public a deriving (Show)
 
 type Key = String
-type Private a = Privacy Key a
--- type CalP a = Map (Private Date) (Private a)
--- type CalPPte a = CalP (Private a) 
+type Private = Privacy Key
 
-(*->.) :: (Key, Date) -> a -> Map Private a b
+(*->.) :: (Key, Date) -> a -> Map Private Date a
 (k, d) *->. i = Hidden k d :-> Public i
 
-(.->*) :: Date -> (Key, a) -> Map Private a b
+
+(.->*) :: Date -> (Key, a) -> Map Private Date a
 d .->* (k, i) = Public d :-> Hidden k i
 
-(.->.) :: Date -> a -> Map Private a b
+(.->.) :: Date -> a -> Map Private Date a
 d .->. i = Public d :-> Public i
 
 -- Wrap (w (Map w a b))
