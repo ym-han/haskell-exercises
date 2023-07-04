@@ -1,10 +1,12 @@
-{-# LANGUAGE InstanceSigs #-}
+{-# LANGUAGE InstanceSigs, LambdaCase #-}
 
 module MTExs where
 
 import Control.Arrow (first, second)
 import Control.Applicative
 import Control.Monad (ap)
+
+newtype MaybeT m a = MaybeT { runMaybeT :: m (Maybe a) }
 
 newtype EitherT e m a = EitherT { runEitherT :: m (Either e a) }
 
@@ -34,6 +36,29 @@ instance Monad m
           case ea of 
             Left e -> return (Left e)
             Right a -> runEitherT (f a)   
+
+
+swapEither :: Either e a -> Either a e
+swapEither = \case
+  Left l -> Right l 
+  Right r -> Left r
+
+swapEitherT :: (Functor m) 
+            => EitherT e m a
+            -> EitherT a m e
+swapEitherT = EitherT . fmap swapEither . runEitherT
+
+eitherT :: Monad m => 
+           (a -> m c)
+        -> (b -> m c)
+        -> EitherT a m b
+        -> m c
+eitherT leftFn rightFn (EitherT amb) = do
+  ab <- amb
+  case ab of
+    Left left  ->  leftFn left 
+    Right right -> rightFn right 
+
 
 --- StateT
 
@@ -69,3 +94,8 @@ instance (Monad m)
                                          let ssmb = f a
                                          (b, s'') <- (runStateT ssmb) s'
                                          return (b, s'')
+
+te :: EitherT String [] Int
+te = return 1
+
+rte = runEitherT te
